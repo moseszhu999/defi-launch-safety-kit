@@ -1,47 +1,46 @@
 # DeFi Launch Safety Kit
 
-![Python](https://img.shields.io/badge/python-3.11%2B-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Status](https://img.shields.io/badge/status-v0.1_MVP-orange)
-
 A lightweight pre-audit and launch safety review toolkit for DeFi and token projects.
 
-This project is a defensive CLI tool for small crypto teams, technical consultants, and builders who want a quick launch-safety review before a formal audit. It scans Solidity source code for common launch risks such as privileged owner functions, mint/burn authority, blacklist/freeze mechanisms, mutable taxes/fees, upgradeability, low-level calls, rescue/withdraw functions, and missing launch checklist items.
+`defi-launch-safety-kit` is a Python CLI tool that scans Solidity source code and generates a launch-readiness risk report. It is designed for small DeFi/token teams, independent reviewers, and builders who want a structured pre-audit checklist before commissioning a formal security audit.
 
-It is **not** a formal security audit tool. It does **not** guarantee safety. It is designed to help teams prepare for audit, improve documentation, and discover obvious pre-launch risk areas.
+It is **not** a formal audit tool. It does not guarantee that a contract is safe.
 
-## Features
+## What it checks
 
-- Local Solidity source scanning
-- Optional verified-source fetching from Etherscan-style APIs
-- Built-in heuristic scanner for common launch risks
-- Optional Slither integration when installed locally
-- Markdown and JSON report generation
-- Launch checklist generation
-- Demo contracts for safe/risky/upgradeable examples
+The built-in scanner looks for common launch-risk signals:
+
+- Owner/admin/role privileges
+- Mint and burn functions
+- Pause, blacklist, whitelist, freeze controls
+- Tax, fee, router, pair, max transaction, and max wallet logic
+- Upgradeability and proxy patterns
+- Dangerous Solidity patterns such as `selfdestruct`, `tx.origin`, `delegatecall`, low-level calls, `assembly`, `unchecked`, and emergency withdrawal functions
+- Missing launch checklist items, such as tests, deployment scripts, multisig, timelock, vesting policy, liquidity lock policy, and known-risk disclosure
+
+If `slither` is installed locally, the CLI also runs Slither and attaches its output. If Slither is unavailable, the tool automatically falls back to built-in rules.
 
 ## Installation
 
 ```bash
-cd defi-launch-safety-kit
-python -m pip install -e .
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
 ```
 
 For development:
 
 ```bash
-python -m pip install -e .[dev]
+pip install -e .[dev]
 ```
 
 Optional Slither support:
 
 ```bash
-python -m pip install slither-analyzer
+pip install -e .[slither]
 ```
 
-## Quick Start
-
-Scan a local contract:
+## Quick start
 
 ```bash
 dlsk scan --source examples/contracts/RiskyToken.sol --out reports/demo
@@ -50,10 +49,9 @@ dlsk scan --source examples/contracts/RiskyToken.sol --out reports/demo
 Expected output:
 
 ```text
-Overall Risk: CRITICAL or HIGH
+Overall Risk: CRITICAL
 Findings: ...
-Markdown report saved to: reports/demo/report.md
-JSON report saved to: reports/demo/report.json
+Report saved to reports/demo/report.md
 ```
 
 Generated files:
@@ -64,118 +62,150 @@ reports/demo/report.json
 reports/demo/checklist.md
 ```
 
-## Scan Local Source
+## Scan local Solidity source
+
+Scan one Solidity file:
 
 ```bash
 dlsk scan --source examples/contracts/RiskyToken.sol
 ```
 
+Scan a directory:
+
 ```bash
 dlsk scan --source examples/contracts
 ```
 
-```bash
-dlsk scan --source examples/contracts/RiskyToken.sol --format markdown
-```
-
-```bash
-dlsk scan --source examples/contracts/RiskyToken.sol --format json
-```
+Skip optional Slither integration:
 
 ```bash
 dlsk scan --source examples/contracts/RiskyToken.sol --no-slither
 ```
 
-## Scan Verified Chain Contracts
-
-Set explorer API keys:
+Generate only Markdown:
 
 ```bash
-export ETHERSCAN_API_KEY=your_key
-export BSCSCAN_API_KEY=your_key
-export POLYGONSCAN_API_KEY=your_key
+dlsk scan --source examples/contracts/RiskyToken.sol --format markdown
 ```
 
-Then run:
+Generate only JSON:
 
 ```bash
-dlsk scan --address 0x0000000000000000000000000000000000000000 --chain ethereum
+dlsk scan --source examples/contracts/RiskyToken.sol --format json
 ```
 
-Supported chain options:
+## Scan verified chain contracts
+
+The CLI can fetch verified source code from explorer APIs.
+
+```bash
+dlsk scan --address 0xContractAddress --chain ethereum
+```
+
+Supported chain values:
 
 - `ethereum`
 - `bsc`
 - `polygon`
 
-If the API key is missing or the contract is not verified, the CLI prints a friendly error.
+## Environment variables
 
-## Environment Variables
+Set explorer API keys when using `--address`:
 
-Copy `.env.example` and fill keys if you want source fetching:
-
-```text
+```bash
 ETHERSCAN_API_KEY=
 BSCSCAN_API_KEY=
 POLYGONSCAN_API_KEY=
 ```
 
-The CLI does not require these keys for local source scanning.
+Copy `.env.example` if needed.
 
-## Risk Rules
+## Audit preparation pack
 
-The built-in scanner highlights these categories:
+After running a scan, generate a client-facing audit-prep pack:
 
-- Permissions: Ownable, owner, onlyOwner, AccessControl, admin roles
-- Mint/Burn: mint, _mint, burn, _burn, supply-cap signals
-- Pause/Blacklist: pause, unpause, blacklist, freeze, allowlist
-- Tax/Fee/Transfer Hooks: tax, fee, setTax, setFee, maxTx, maxWallet
-- Upgrade/Proxy: UUPS, Initializable, upgradeTo, delegatecall, proxy
-- Dangerous Patterns: selfdestruct, tx.origin, call, assembly, emergency withdraws
+```bash
+dlsk prep --report reports/demo/report.json --out reports/demo/audit-prep-pack
+```
 
-## Output Report
+Generated files:
+
+```text
+audit-prep-pack/README.md
+audit-prep-pack/audit-prep.md
+audit-prep-pack/owner-permissions.md
+audit-prep-pack/deployment-checklist.md
+audit-prep-pack/known-risks.md
+audit-prep-pack/questions-for-team.md
+```
+
+This pack is useful when preparing a small DeFi/token project for a formal audit or external technical review. It organizes scan output into owner/admin permissions, deployment checklist, known-risk disclosure, and questions for the project team.
+
+## Report sections
 
 The Markdown report contains:
 
 1. Summary
-2. Key Findings
-3. Permission Risk Map
-4. Tokenomics / Transfer Risk
-5. Upgradeability Risk
-6. Dangerous Patterns
-7. Launch Checklist
-8. Slither Notes
+2. Key findings
+3. Permission risk map
+4. Tokenomics / transfer risk
+5. Upgradeability risk
+6. Dangerous patterns
+7. Launch checklist
+8. Slither output
 9. Disclaimer
 
-The JSON report is machine-readable and can be used by future dashboards or SaaS versions.
+## Severity levels
 
-## Testing
+The tool uses five severity levels:
 
-```bash
-pytest
-```
+- `INFO`
+- `LOW`
+- `MEDIUM`
+- `HIGH`
+- `CRITICAL`
 
-## Intended Use Cases
+Examples:
+
+- `selfdestruct`: `CRITICAL`
+- Privileged mint without obvious cap: `CRITICAL`
+- `delegatecall`: `HIGH`
+- Blacklist/freeze: `HIGH`
+- Upgradeability: `HIGH`
+- Adjustable tax/fee: `MEDIUM` to `HIGH`
+- Plain `Ownable`: `LOW`
+- Checklist gaps: `INFO` or manual-check items
+
+## Example service positioning
+
+This project can support a service offering such as:
 
 - Pre-audit technical review
-- Launch checklist preparation
-- Internal technical due diligence
+- DeFi launch safety review
+- Token launch checklist review
 - Audit preparation pack
-- Small project risk triage
-- Portfolio demo for crypto security/backend consulting
+- Smart contract risk triage
+
+Avoid calling the output a formal audit. Use it as a structured launch-readiness report.
 
 ## Disclaimer
 
-This report is a lightweight pre-audit technical review. It is not a formal security audit and does not guarantee the absence of vulnerabilities.
-
-The built-in scanner is heuristic. It may produce false positives and false negatives. Production crypto systems should still receive professional security review, comprehensive testing, deployment verification, operational monitoring, and legal/compliance review where applicable.
+This report is a lightweight pre-audit technical review. It is not a formal security audit and does not guarantee the absence of vulnerabilities. Use it as a launch-readiness checklist and risk triage aid before commissioning a professional audit when funds or users are at risk.
 
 ## Roadmap
 
-- v0.2: Better Etherscan/BscScan/PolygonScan multi-file source handling
-- v0.2: Detect whether owner/admin is EOA, contract, or Safe multisig
-- v0.2: Foundry/Hardhat test coverage summary
-- v0.3: Permission graph visualization
-- v0.3: Treasury and privileged event monitor
-- v0.4: HTML report export
-- v0.5: Optional SaaS dashboard
+Implemented through v0.3:
+
+- Etherscan/BscScan/PolygonScan multi-file source parsing
+- Owner address EOA vs contract / Safe-like detection
+- HTML report export
+- Mermaid permission graph
+- Audit Preparation Pack generator
+
+Planned v0.4 ideas:
+
+- CI-friendly exit codes by severity
+- More precise AST-based analysis
+- Foundry/Hardhat coverage extraction
+- SARIF export
+- Better timelock and Safe module detection
