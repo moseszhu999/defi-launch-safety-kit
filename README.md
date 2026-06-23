@@ -234,6 +234,28 @@ SARIF can be uploaded to GitHub Code Scanning from GitHub Actions.
 
 ---
 
+## Articles
+
+- [20 Risks to Check Before Launching an ERC20 Token](docs/articles/20-erc20-launch-risks.md)
+
+## Case studies
+
+- [Demo ERC20 Launch-Readiness Review](docs/case-studies/demo-erc20-launch-review.md)
+
+## Request a review
+
+Use the GitHub issue template to request a lightweight launch-readiness review:
+
+- [Request a launch-readiness review](../../issues/new?template=launch-readiness-review.md)
+
+Best-fit projects:
+
+- ERC20 / staking / vesting / airdrop projects before formal audit
+- Small teams preparing for testnet or mainnet
+- Teams that want a structured pre-audit checklist before spending on a formal audit
+
+---
+
 ## Useful docs
 
 - `docs/structured-imports.md`
@@ -247,6 +269,9 @@ SARIF can be uploaded to GitHub Code Scanning from GitHub Actions.
 - `docs/github-profile-readme-snippet.md`
 - `docs/linkedin-launch-post.md`
 - `docs/github-marketing-playbook.md`
+- `docs/github-profile-readme.md`
+- `docs/linkedin-posts/erc20-launch-risks-post.md`
+- `docs/linkedin-posts/demo-case-study-post.md`
 
 ---
 
