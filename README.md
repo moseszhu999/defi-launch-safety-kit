@@ -8,6 +8,17 @@
 
 ---
 
+## Visual demo
+
+![DeFi Launch Safety Kit demo screenshot](docs/assets/demo-screenshot.svg)
+
+Open the sample report preview:
+
+- [Sample HTML report preview](docs/sample-report-preview.html)
+- [Demo visual assets and social captions](docs/demo-visual-assets.md)
+
+---
+
 ## Who this is for
 
 - Small DeFi/token teams preparing for testnet, mainnet, or formal audit
@@ -258,6 +269,8 @@ Best-fit projects:
 
 ## Useful docs
 
+- `docs/sample-report-preview.html`
+- `docs/demo-visual-assets.md`
 - `docs/structured-imports.md`
 - `docs/contract-surface-map.md`
 - `docs/project-readiness.md`
