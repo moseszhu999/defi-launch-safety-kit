@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DeFi Launch Safety Kit — Sample Launch-Readiness Report</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --muted: #94a3b8;
+      --text: #e5e7eb;
+      --line: #334155;
+      --critical: #ef4444;
+      --high: #f97316;
+      --medium: #f59e0b;
+      --ok: #22c55e;
+      --link: #38bdf8;
+    }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, #1e293b, var(--bg));
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+    main { max-width: 1040px; margin: 0 auto; padding: 56px 22px 80px; }
+    a { color: var(--link); }
+    .hero { margin-bottom: 32px; }
+    .eyebrow { color: var(--link); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 13px; }
+    h1 { font-size: 44px; line-height: 1.08; margin: 12px 0 16px; }
+    h2 { margin-top: 42px; font-size: 26px; }
+    h3 { margin-top: 0; }
+    .subtitle { color: #cbd5e1; font-size: 19px; max-width: 780px; }
+    .panel { background: rgba(17, 24, 39, .86); border: 1px solid var(--line); border-radius: 18px; padding: 24px; margin: 18px 0; box-shadow: 0 18px 50px rgba(0,0,0,.25); }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .card { background: #0b1120; border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+    .metric { display: block; font-size: 30px; font-weight: 800; }
+    .label { color: var(--muted); font-size: 13px; }
+    .critical { color: var(--critical); }
+    .high { color: var(--high); }
+    .medium { color: var(--medium); }
+    .ok { color: var(--ok); }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 12px 14px; text-align: left; vertical-align: top; }
+    th { color: #f8fafc; background: #0b1120; }
+    code { background: #0b1120; border: 1px solid #1e293b; padding: 2px 6px; border-radius: 6px; }
+    pre { background: #020617; border: 1px solid var(--line); padding: 18px; border-radius: 14px; overflow: auto; }
+    .note { color: var(--muted); font-size: 14px; }
+    @media (max-width: 760px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } h1 { font-size: 34px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Sample Report Preview</div>
+      <h1>DeFi Launch Safety Kit</h1>
+      <p class="subtitle">A lightweight pre-audit and launch-readiness report for a demo ERC20 token project. This sample shows the kind of evidence, triage, and audit-preparation material small DeFi teams can use before formal audit or mainnet launch.</p>
+      <p class="note">Disclaimer: this is not a formal security audit and does not guarantee safety.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Executive summary</h2>
+      <div class="grid">
+        <div class="card"><span class="metric critical">CRITICAL</span><span class="label">Overall risk</span></div>
+        <div class="card"><span class="metric">46</span><span class="label">Total findings</span></div>
+        <div class="card"><span class="metric high">16</span><span class="label">Critical / High</span></div>
+        <div class="card"><span class="metric medium">10/14</span><span class="label">Readiness score</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Key launch risks</h2>
+      <table>
+        <thead><tr><th>Area</th><th>Observation</th><th>Why it matters</th></tr></thead>
+        <tbody>
+          <tr><td>Owner/admin</td><td>Privileged functions include <code>mint</code>, <code>pause</code>, <code>setTax</code>, <code>rescueTokens</code>.</td><td>Centralized controls should be documented, multisig-protected, and disclosed before launch.</td></tr>
+          <tr><td>Mint authority</td><td>Owner-controlled minting path detected.</td><td>Unbounded supply changes can harm holders and should be constrained or time-locked.</td></tr>
+          <tr><td>Transfer controls</td><td>Tax / blacklist / pause control surface detected.</td><td>Transfer restrictions can affect market behavior and user trust.</td></tr>
+          <tr><td>Deployment readiness</td><td>Partial tests and deployment artifacts detected.</td><td>Missing tests, scripts, or CI gates increase launch-time operational risk.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Contract surface map</h2>
+      <div class="grid">
+        <div class="card"><span class="metric">1</span><span class="label">Contract</span></div>
+        <div class="card"><span class="metric">9</span><span class="label">Public/external functions</span></div>
+        <div class="card"><span class="metric high">7</span><span class="label">Privileged functions</span></div>
+        <div class="card"><span class="metric">SARIF</span><span class="label">CI output</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Generated outputs</h2>
+      <pre>report.md
+report.json
+report.html
+report.sarif
+checklist.md
+audit-prep-pack/
+  owner-permissions.md
+  deployment-checklist.md
+  known-risks.md
+  questions-for-team.md</pre>
+    </section>
+
+    <section class="panel">
+      <h2>Recommended next steps</h2>
+      <ol>
+        <li>Move owner/admin privileges to a multisig before public launch.</li>
+        <li>Document every mint, pause, blacklist, rescue, withdraw, tax, and upgrade path.</li>
+        <li>Add tests for privileged flows and failure cases.</li>
+        <li>Run Slither / solc structured import and attach findings to the audit-prep pack.</li>
+        <li>Commission a formal audit before handling meaningful funds or users.</li>
+      </ol>
+    </section>
+
+    <p class="note">Project: <a href="https://github.com/moseszhu999/defi-launch-safety-kit">github.com/moseszhu999/defi-launch-safety-kit</a></p>
+  </main>
+</body>
+</html>
