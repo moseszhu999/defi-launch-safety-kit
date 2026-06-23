@@ -1,0 +1,44 @@
+{
+  "success": true,
+  "error": null,
+  "results": {
+    "detectors": [
+      {
+        "check": "controlled-mint",
+        "impact": "High",
+        "confidence": "Medium",
+        "description": "RiskyToken.mint(address,uint256) is protected by onlyOwner and can increase totalSupply without an explicit cap.",
+        "elements": [
+          {
+            "type": "function",
+            "name": "mint",
+            "source_mapping": {
+              "filename_relative": "examples/contracts/RiskyToken.sol",
+              "lines": [
+                23
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "check": "arbitrary-send-eth",
+        "impact": "Medium",
+        "confidence": "Medium",
+        "description": "emergencyWithdraw transfers the full ETH balance to owner; verify multisig/timelock controls and operational runbook.",
+        "elements": [
+          {
+            "type": "function",
+            "name": "emergencyWithdraw",
+            "source_mapping": {
+              "filename_relative": "examples/contracts/RiskyToken.sol",
+              "lines": [
+                58
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -4,25 +4,38 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "defi-launch-safety-kit"
-version = "0.1.0"
+version = "1.2.0"
 description = "A lightweight pre-audit and launch safety review toolkit for DeFi and token projects."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
 authors = [{ name = "Zhu Dapeng" }]
+license = { text = "MIT" }
 dependencies = [
-  "typer>=0.12.0",
-  "rich>=13.0.0",
-  "pydantic>=2.0.0",
-  "jinja2>=3.1.0",
-  "requests>=2.31.0"
+  "typer>=0.9",
+  "rich>=13",
+  "pydantic>=2",
+  "jinja2>=3",
+  "requests>=2",
+  "pyyaml>=6"
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0.0"]
+dev = ["pytest>=8"]
+slither = ["slither-analyzer>=0.10"]
 
 [project.scripts]
 dlsk = "dlsk.cli:app"
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+dlsk = ["report/templates/*.j2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
