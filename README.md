@@ -1,44 +1,42 @@
 # DeFi Launch Safety Kit
 
-A lightweight pre-audit and launch-readiness toolkit for DeFi and token projects.
+**A lightweight pre-audit and launch-readiness toolkit for DeFi and token projects.**
 
-`defi-launch-safety-kit` is a defensive Python CLI for small DeFi/token teams, independent reviewers, and builders preparing for formal audit or mainnet launch.
+`defi-launch-safety-kit` helps small DeFi/token teams, independent reviewers, and builders prepare for formal audit or mainnet launch. It scans Solidity projects and generates Markdown, JSON, HTML, and SARIF reports, plus audit-preparation material such as owner/admin permission review, deployment checklist, known-risk notes, project readiness checks, contract surface maps, and structured imports from solc AST / Slither JSON.
 
-It scans Solidity projects and generates Markdown, JSON, HTML, and SARIF reports, plus audit-preparation material such as owner/admin permission review, deployment checklist, known-risk notes, project readiness checks, contract surface maps, and structured imports from solc AST / Slither JSON.
+> This is **not** a formal security audit and does not guarantee safety. It is defensive launch-readiness triage before commissioning a professional audit when funds or users are at risk.
 
-> This is **not** a formal security audit. It does not guarantee safety. Use it as launch-readiness triage before commissioning a professional audit when funds or users are at risk.
+---
 
-## Highlights
+## Who this is for
 
-- Solidity source scanning for common launch-risk signals
+- Small DeFi/token teams preparing for testnet, mainnet, or formal audit
+- Founders who need an early risk checklist before paying for a full audit
+- Solidity builders who want CI-friendly launch checks
+- Independent reviewers who need a repeatable pre-audit report format
+- Teams that need Markdown, HTML, JSON, and SARIF outputs for internal review
+
+## What it checks
+
+- Owner/admin privilege risks
+- Mint, burn, pause, blacklist, tax, fee, and transfer-control patterns
+- Upgradeability and dangerous Solidity patterns
 - ERC20 / staking / vesting / airdrop rule packs
-- Stable finding IDs such as `DLSK-ERC20-006`
-- Markdown, JSON, HTML, and SARIF output
-- CI gate support with `--fail-on` and `--fail-on-new`
-- Baseline diff mode so CI can block only newly introduced risk
-- Configurable policy via `dlsk.yml`
-- Foundry / Hardhat project readiness checks
 - Contract surface map for public/external and privileged functions
-- Audit preparation pack generator
+- Foundry / Hardhat project readiness
+- Deployment scripts, tests, CI, and coverage-readiness signals
 - Structured imports from solc Standard JSON AST and Slither JSON
+- SARIF output for GitHub Code Scanning / CI security gates
 
-## Install
+---
+
+## Quick demo
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
-```
 
-Optional Slither support:
-
-```bash
-pip install -e .[slither]
-```
-
-## Quick start
-
-```bash
 dlsk scan \
   --source examples/contracts/RiskyToken.sol \
   --profile erc20 \
@@ -57,7 +55,17 @@ reports/demo/report.sarif
 reports/demo/checklist.md
 ```
 
+Optional Slither support:
+
+```bash
+pip install -e .[slither]
+```
+
+---
+
 ## Audit preparation pack
+
+Turn scan results into client/auditor-facing preparation material:
 
 ```bash
 dlsk prep \
@@ -75,6 +83,8 @@ audit-prep-pack/deployment-checklist.md
 audit-prep-pack/known-risks.md
 audit-prep-pack/questions-for-team.md
 ```
+
+---
 
 ## Contract surface map
 
@@ -101,6 +111,8 @@ The map highlights:
 - public state-changing functions
 - privileged functions such as mint, pause, blacklist, rescue, withdraw, upgrade
 
+---
+
 ## Structured imports
 
 Import compiler and analyzer outputs:
@@ -124,6 +136,8 @@ dlsk scan \
   --out reports/demo-v12 \
   --no-slither
 ```
+
+---
 
 ## Policy config
 
@@ -150,6 +164,8 @@ ignore:
   - category:Operational Security
 ```
 
+---
+
 ## Baseline diff mode
 
 Create a baseline:
@@ -172,6 +188,8 @@ dlsk scan \
   --out reports/ci
 ```
 
+---
+
 ## Project readiness
 
 ```bash
@@ -181,6 +199,8 @@ dlsk readiness \
 ```
 
 Readiness checks include Foundry/Hardhat detection, tests, deployment scripts, coverage artifacts, CI workflow files, and privileged-flow test hints.
+
+---
 
 ## Rule packs
 
@@ -197,6 +217,8 @@ Supported profiles:
 - `auto`
 - `all`
 
+---
+
 ## CI / SARIF
 
 ```bash
@@ -210,6 +232,8 @@ dlsk scan \
 
 SARIF can be uploaded to GitHub Code Scanning from GitHub Actions.
 
+---
+
 ## Useful docs
 
 - `docs/structured-imports.md`
@@ -220,10 +244,15 @@ SARIF can be uploaded to GitHub Code Scanning from GitHub Actions.
 - `docs/rule-packs.md`
 - `docs/finding-taxonomy.md`
 - `docs/launch-review-service-one-pager.md`
+- `docs/github-profile-readme-snippet.md`
+- `docs/linkedin-launch-post.md`
+- `docs/github-marketing-playbook.md`
 
-## Service positioning
+---
 
-This project supports services such as:
+## Need a launch-readiness review?
+
+This project can support services such as:
 
 - Pre-audit technical review
 - DeFi/token launch safety review
@@ -231,6 +260,20 @@ This project supports services such as:
 - Owner/admin permission review
 - GitHub Actions / SARIF security gate setup
 - Project readiness review before formal audit
+
+Typical early-stage review scope:
+
+```text
+1. Run DLSK scan on the repository
+2. Review owner/admin, mint, pause, blacklist, tax, fee, rescue, withdraw, and upgrade paths
+3. Generate a Markdown/HTML report
+4. Generate an audit-preparation pack
+5. Provide a short remediation checklist before formal audit or mainnet launch
+```
+
+Contact: open an issue in this repository or reach out via the maintainer profile.
+
+---
 
 ## Disclaimer
 
