@@ -1,36 +1,42 @@
 # Moses Zhu
 
-I build tools and systems around DeFi/token launch-readiness, smart-contract pre-audit preparation, Web3 backend architecture, supply-chain finance systems, and AI-assisted engineering workflows.
+I build practical tools and systems around DeFi/token launch-readiness, smart-contract pre-audit preparation, Web3 backend architecture, supply-chain finance systems, and AI-assisted engineering workflows.
 
 ## Featured project
 
 ### DeFi Launch Safety Kit
 
-A lightweight pre-audit and launch-readiness toolkit for DeFi/token projects.
+**AI-assisted pre-audit launch-readiness workflow for small DeFi and token teams.**
 
-It scans Solidity repositories and generates Markdown, JSON, HTML, and SARIF reports, plus audit-preparation materials such as:
+DeFi Launch Safety Kit helps teams turn Solidity scans, AI review notes, owner/admin permission checks, contract surface maps, deployment checklists, baseline diffs, and audit-preparation materials into a reproducible launch-readiness evidence pack before formal audit or mainnet.
 
-- owner/admin permission review
-- contract surface map
-- launch checklist
-- known-risk notes
-- Foundry / Hardhat project-readiness checks
-- baseline diff mode for CI
-- solc AST / Slither JSON structured imports
+It is not a replacement for a formal security audit. It is a practical readiness layer before teams talk to auditors, launchpads, investors, or the community.
 
 Repository:
 
 https://github.com/moseszhu999/defi-launch-safety-kit
 
+## What the project produces
+
+- Markdown / JSON / HTML / SARIF reports
+- Owner/admin permission review notes
+- Contract surface map
+- Deployment and launch checklist
+- Known-risk notes
+- Audit-preparation pack
+- Foundry / Hardhat project-readiness checks
+- Baseline diff mode for CI
+- AI review prompt pack for human-in-the-loop review
+
 ## Focus areas
 
 - DeFi/token launch-readiness
-- Solidity pre-audit support
+- Solidity pre-audit preparation
+- AI-assisted security review workflows
 - GitHub Actions / SARIF security gates
 - Foundry / Hardhat project readiness
 - Web3 backend and on-chain data systems
 - Supply-chain finance and blockchain system architecture
-- AI-assisted software delivery and documentation
 
 ## Background
 
