@@ -10,7 +10,7 @@ Goal: filter the first five candidates before any outreach. Do not contact proje
 
 | Rank | Repository | Verdict | Why |
 |---|---|---|---|
-| 1 | `orien7/uday-erc20-staking` | Best first outreach candidate | Clear staking/token scope, readable README, explicit author/contact, meaningful owner/mint/reward/lock/penalty surface, Hardhat scripts and tests. |
+| 1 | `orien7/uday-erc20-staking` | Best first outreach candidate; readiness note drafted | Clear staking/token scope, readable README, explicit author/contact, meaningful owner/mint/reward/lock/penalty surface, Hardhat scripts and tests. Friendly note drafted at `docs/marketing/readiness-notes/orien7-uday-erc20-staking.md`. |
 | 2 | `saurabh0829/merkle-airdrop-dapp` | Good candidate, verify contract path first | Strong README, live demo, airdrop/admin/Merkle/security angle. But root package looks frontend-only and contract path was not immediately found. |
 | 3 | `qryptalabs/qrypta-token` | Interesting but needs deeper verification | Strong positioning and Hardhat dependencies, but README is short and contract file path was not immediately found. |
 | 4 | `ShamratDev/ERC20-Token-Hardhat-Multi-Network` | Good friendly documentation/CI candidate | Simple ERC20 with multi-network README, OpenZeppelin, tests, deployment notes. But package test script does not match README claims. |
@@ -34,6 +34,22 @@ The README presents the project as a production-grade ERC20 token plus staking r
 - staking contract with reward rate, lock period, emergency penalty, minimum stake
 - owner functions for reward rate, lock period, and reward funding
 - Hardhat compile/test/deploy scripts
+- explicit security policy and pre-mainnet requirements
+
+### Verified public-repo evidence
+
+- README includes a Sepolia/mainnet go-live checklist, including audit, multisig owner, Defender, and bug bounty items.
+- `UDAYToken.sol` includes owner-controlled `mint` up to max supply.
+- `StakingRewards.sol` includes `setRewardRate`, `setLockPeriod`, and `fundRewards` as owner functions.
+- Deployment script funds the staking contract with 500,000 UDAY reward tokens.
+- Tests cover staking, rewards, unstaking, and emergency withdraw user flows.
+- Security policy asks not to open public vulnerability issues, so outreach should be friendly/documentation-focused or via LinkedIn.
+
+### Draft readiness note
+
+Created:
+
+- `docs/marketing/readiness-notes/orien7-uday-erc20-staking.md`
 
 ### Suggested note angle
 
@@ -43,15 +59,17 @@ Frame it as:
 
 > Your staking project is a good fit for a launch-readiness evidence pack because it has owner-controlled reward parameters, mint authority, lock/penalty assumptions, and reward funding assumptions that are worth documenting before audit or testnet feedback.
 
-### First observations to verify locally
+### First observations
 
 - Document owner-controlled `mint`, `setRewardRate`, `setLockPeriod`, and `fundRewards`.
-- Check whether reward solvency assumptions are explicitly documented.
-- Check whether tests cover owner parameter changes, reward-funding edge cases, and emergency withdraw expectations.
+- Make reward solvency assumptions explicit.
+- Add tests for owner parameter changes, reward-funding edge cases, and repeated/partial staking semantics.
 
 ### Outreach priority
 
-High. Inspect first.
+High.
+
+Preferred contact path: LinkedIn first. Do not open a public security issue.
 
 ---
 
@@ -175,11 +193,11 @@ Low / skip.
 
 ## Next action
 
-1. Inspect `orien7/uday-erc20-staking` more deeply.
-2. Prepare a private-friendly readiness note with 3 concrete observations.
-3. Do not mention vulnerabilities publicly.
-4. If contact path is clear, send soft outreach after the readiness note is prepared.
+1. Optionally send the soft LinkedIn message for `orien7/uday-erc20-staking`.
+2. Verify contract paths for `saurabh0829/merkle-airdrop-dapp`.
+3. Verify code structure for `qryptalabs/qrypta-token`.
+4. Prepare one low-risk public documentation/CI note for `ShamratDev/ERC20-Token-Hardhat-Multi-Network`.
 
-Recommended first target:
+Recommended first outreach:
 
-> `orien7/uday-erc20-staking`
+> `orien7/uday-erc20-staking` via LinkedIn, using a soft ask before sharing the full note.
