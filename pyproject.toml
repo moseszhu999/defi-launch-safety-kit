@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "defi-launch-safety-kit"
-version = "1.2.0"
-description = "A lightweight pre-audit and launch safety review toolkit for DeFi and token projects."
+version = "1.3.0"
+description = "An AI-assisted pre-audit launch-readiness workflow for DeFi and token projects."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Zhu Dapeng" }]
