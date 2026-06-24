@@ -64,6 +64,165 @@ RULES: list[tuple[str, str, str, str, str]] = [
     ("LOW", "Token Allowance", "Allowance function detected", r"\b(approve|transferFrom)\b", "Confirm allowance behavior follows expected token standard."),
 ]
 
+AI_REVIEW_PROMPTS: dict[str, str] = {
+    "01-owner-admin-review.md": """# AI Review Prompt: Owner/Admin Permission Review
+
+You are reviewing a Solidity project before formal audit or mainnet launch.
+
+Goal: identify owner/admin powers that need documentation, governance controls, or manual review.
+
+Inputs to paste below:
+- Solidity contracts
+- DLSK report.json or report.md
+- Contract surface map, if available
+- Deployment assumptions, if available
+
+Review checklist:
+1. List every owner/admin/role-controlled function.
+2. Identify mint, burn, pause, blacklist, whitelist, fee/tax, rescue, withdraw, upgrade, oracle, router, and treasury powers.
+3. Explain who can call each privileged path.
+4. Identify whether the privileged caller is likely to be an EOA, multisig, timelock, DAO, or unknown.
+5. Flag any role that could change user balances, transfer rules, supply, treasury funds, implementation, or trading behavior.
+6. Separate launch blockers from documentation items.
+7. Do not claim this is a formal audit.
+
+Output format:
+- Summary
+- Privileged function table
+- Launch blockers
+- Documentation gaps
+- Questions for the team
+- Recommended next actions
+""",
+    "02-tokenomics-risk-review.md": """# AI Review Prompt: Tokenomics and Transfer-Risk Review
+
+You are reviewing an ERC20/token project before launch.
+
+Goal: identify tokenomics-related implementation risks that should be disclosed or checked before audit/mainnet.
+
+Inputs to paste below:
+- Solidity contracts
+- Tokenomics notes
+- DLSK findings
+- Deployment checklist
+
+Review checklist:
+1. Detect supply cap, mint policy, burn policy, decimals, initial distribution, vesting, airdrop, tax/fee, blacklist/whitelist, max wallet, max transaction, anti-bot, and DEX/router behavior.
+2. Identify mutable tokenomics parameters and who can change them.
+3. Explain whether any mechanism could surprise users after launch.
+4. Identify documentation gaps rather than making unsupported accusations.
+5. Separate hard risks from normal launch-policy choices.
+
+Output format:
+- Token behavior summary
+- Mutable parameters
+- User-impacting powers
+- Disclosure gaps
+- Launch blockers
+- Questions for the team
+""",
+    "03-upgradeability-review.md": """# AI Review Prompt: Upgradeability and Proxy Review
+
+You are reviewing a Solidity project that may use proxies or upgradeable contracts.
+
+Goal: identify upgradeability risks and documentation gaps before audit/mainnet.
+
+Inputs to paste below:
+- Solidity contracts
+- Deployment scripts
+- DLSK report
+- Any proxy/admin addresses or deployment notes
+
+Review checklist:
+1. Detect UUPS, Transparent Proxy, Beacon Proxy, custom proxy, delegatecall, initializer, reinitializer, storage gaps, and implementation admin patterns.
+2. Identify who can upgrade and how upgrades are authorized.
+3. Check whether initialization appears protected.
+4. Identify storage-layout or delegatecall areas that require expert audit.
+5. Identify whether upgrade power is documented for users/investors/auditors.
+6. Do not claim safety without manual verification.
+
+Output format:
+- Upgradeability summary
+- Upgrade authority table
+- Initialization concerns
+- Storage/delegatecall concerns
+- Launch blockers
+- Questions for the team
+""",
+    "04-launch-blocker-review.md": """# AI Review Prompt: Launch-Blocker Review
+
+You are reviewing a Solidity project immediately before testnet, mainnet, or formal audit.
+
+Goal: produce a short launch-readiness triage, not a full audit.
+
+Inputs to paste below:
+- DLSK report.md or report.json
+- DLSK checklist.md
+- Contract surface map
+- Project README
+- Deployment assumptions
+
+Classify each issue as:
+- BLOCKER: should be fixed or explicitly accepted before mainnet.
+- NEEDS TEAM CONFIRMATION: cannot decide without project context.
+- DOCUMENTATION GAP: should be disclosed in audit-prep materials.
+- LOW PRIORITY: can wait.
+
+Review checklist:
+1. Privileged functions.
+2. Upgradeability.
+3. Mint/burn/supply.
+4. Pausing/freezing/blacklisting.
+5. Mutable tax/fee/transfer rules.
+6. Treasury/rescue/withdraw powers.
+7. Deployment scripts and owner transfer.
+8. Test coverage around privileged flows.
+9. Known-risk notes.
+10. Audit-prep questions.
+
+Output format:
+- Executive summary
+- Blockers
+- Needs confirmation
+- Documentation gaps
+- Suggested GitHub issue text
+- Suggested auditor handoff notes
+""",
+    "05-audit-prep-summary.md": """# AI Review Prompt: Audit-Preparation Summary
+
+You are helping a small DeFi/token team prepare materials for a formal security auditor.
+
+Goal: convert DLSK outputs and project notes into a concise audit-preparation summary.
+
+Inputs to paste below:
+- README
+- DLSK report
+- Audit-prep pack
+- Contract surface map
+- Deployment checklist
+- Known risks
+
+Create:
+1. Project overview.
+2. Contract scope.
+3. Out-of-scope items.
+4. Deployment assumptions.
+5. Owner/admin and governance assumptions.
+6. Known risks and accepted tradeoffs.
+7. Areas needing auditor attention.
+8. Questions the team should answer before audit.
+9. Plain-English disclaimer: this is pre-audit preparation, not a formal audit.
+
+Output format:
+- Audit prep summary
+- Contract scope table
+- Privileged controls summary
+- Known-risk notes
+- Questions for auditor
+- Questions for project team
+""",
+}
+
 
 def _iter_solidity_files(source: Path) -> list[Path]:
     if source.is_file():
@@ -145,6 +304,10 @@ def write_reports(out: Path, source: str, findings: list[Finding], checklist: li
         "checklist": [asdict(c) for c in checklist],
         "slither_available": slither_available,
         "slither_output": slither_output,
+        "ai_assisted_workflow": {
+            "recommended_next_step": "Run `dlsk ai-pack --out <audit-prep-pack>/ai-review-prompts` and use the prompts with a human reviewer.",
+            "disclaimer": "AI model output should be treated as review input, not proof of safety.",
+        },
         "disclaimer": "Lightweight pre-audit technical review. Not a formal security audit.",
     }
     (out / "report.json").write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -168,12 +331,22 @@ def write_reports(out: Path, source: str, findings: list[Finding], checklist: li
     lines += ["", "## 3. Launch Checklist", "", "| Status | Item | Recommendation |", "|---|---|---|"]
     for c in checklist:
         lines.append(f"| {c.status} | {c.item} | {c.recommendation} |")
-    lines += ["", "## 4. Slither Notes", ""]
+    lines += ["", "## 4. AI-Assisted Review Next Step", ""]
+    lines += [
+        "Run:",
+        "",
+        "```bash",
+        "dlsk ai-pack --out ai-review-prompts",
+        "```",
+        "",
+        "Use the generated prompts to turn this scan into a human-reviewed launch-readiness evidence pack. AI output should be treated as review input, not proof of safety.",
+    ]
+    lines += ["", "## 5. Slither Notes", ""]
     if slither_output:
         lines += ["```text", slither_output[:4000], "```"]
     else:
         lines.append("Slither was not run or returned no output.")
-    lines += ["", "## 5. Disclaimer", "", "This report is a lightweight pre-audit technical review. It is not a formal security audit and does not guarantee the absence of vulnerabilities."]
+    lines += ["", "## 6. Disclaimer", "", "This report is a lightweight pre-audit technical review. It is not a formal security audit and does not guarantee the absence of vulnerabilities."]
     (out / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     checklist_lines = ["# Launch Checklist", ""]
@@ -203,6 +376,58 @@ def fetch_verified_source(address: str, chain: str) -> str:
     if not result or not result[0].get("SourceCode"):
         raise typer.BadParameter("No verified source code found for this address.")
     return result[0]["SourceCode"]
+
+
+@app.command()
+def ai_pack(
+    out: Path = typer.Option(Path("ai-review-prompts"), "--out", help="Output directory for AI review prompts."),
+) -> None:
+    """Generate AI-assisted launch-readiness review prompts.
+
+    The prompts are designed to be pasted into a model together with DLSK reports,
+    contract maps, deployment notes, and source excerpts. They do not replace a
+    formal audit or human review.
+    """
+    out.mkdir(parents=True, exist_ok=True)
+
+    index_lines = [
+        "# AI-Assisted Launch-Readiness Prompt Pack",
+        "",
+        "This pack helps turn DLSK scan output into a human-reviewed launch-readiness evidence pack.",
+        "",
+        "Use these prompts with your preferred AI model together with:",
+        "",
+        "- `report.md` or `report.json`",
+        "- `checklist.md`",
+        "- contract surface map",
+        "- deployment scripts and assumptions",
+        "- known-risk notes",
+        "",
+        "Important: AI output is review input, not proof of safety. This pack is not a formal security audit.",
+        "",
+        "## Prompts",
+        "",
+    ]
+
+    for filename, content in AI_REVIEW_PROMPTS.items():
+        (out / filename).write_text(content.strip() + "\n", encoding="utf-8")
+        title = content.splitlines()[0].lstrip("# ").strip()
+        index_lines.append(f"- [{title}]({filename})")
+
+    index_lines += [
+        "",
+        "## Suggested workflow",
+        "",
+        "1. Run `dlsk scan --format all`.",
+        "2. Run `dlsk map` or prepare a contract surface summary.",
+        "3. Run `dlsk prep` if available for the project.",
+        "4. Run `dlsk ai-pack --out ai-review-prompts`.",
+        "5. Paste one prompt at a time into your AI model with the relevant evidence.",
+        "6. Keep only reviewed, confirmed items in the final launch-readiness evidence pack.",
+    ]
+
+    (out / "README.md").write_text("\n".join(index_lines) + "\n", encoding="utf-8")
+    console.print(f"[green]AI review prompt pack written to[/green] {out}")
 
 
 @app.command()
