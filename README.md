@@ -1,8 +1,10 @@
 # DeFi Launch Safety Kit
 
-**A lightweight pre-audit and launch-readiness toolkit for DeFi and token projects.**
+**AI-assisted pre-audit launch-readiness workflow for small DeFi and token teams.**
 
-`defi-launch-safety-kit` helps small DeFi/token teams, independent reviewers, and builders prepare for formal audit or mainnet launch. It scans Solidity projects and generates Markdown, JSON, HTML, and SARIF reports, plus audit-preparation material such as owner/admin permission review, deployment checklist, known-risk notes, project readiness checks, contract surface maps, and structured imports from solc AST / Slither JSON.
+`defi-launch-safety-kit` helps small DeFi/token teams turn Solidity scans, AI review notes, owner/admin permission checks, contract surface maps, deployment checklists, baseline diffs, and audit-preparation materials into a reproducible launch-readiness evidence pack before formal audit or mainnet.
+
+It is not trying to replace large language models or professional auditors. In an AI-native development workflow, the hard part is not getting another list of possible issues. The hard part is producing a structured, reviewable, repeatable evidence pack that a team, investor, launchpad, community, or auditor can actually inspect.
 
 > This is **not** a formal security audit and does not guarantee safety. It is defensive launch-readiness triage before commissioning a professional audit when funds or users are at risk.
 
@@ -24,8 +26,21 @@ Open the sample report preview:
 - Small DeFi/token teams preparing for testnet, mainnet, or formal audit
 - Founders who need an early risk checklist before paying for a full audit
 - Solidity builders who want CI-friendly launch checks
+- Teams using AI tools but needing reproducible evidence instead of one-off chat output
 - Independent reviewers who need a repeatable pre-audit report format
 - Teams that need Markdown, HTML, JSON, and SARIF outputs for internal review
+
+## What it produces
+
+- Solidity scan report in Markdown / JSON / HTML / SARIF
+- Owner/admin permission review notes
+- Launch checklist
+- Known-risk notes
+- Audit-preparation pack
+- Contract surface map
+- Baseline diff for newly introduced risks
+- Foundry / Hardhat readiness checks
+- AI review prompt pack for human-in-the-loop review
 
 ## What it checks
 
@@ -71,6 +86,42 @@ Optional Slither support:
 ```bash
 pip install -e .[slither]
 ```
+
+---
+
+## AI-assisted review pack
+
+Generate reusable prompts that can be pasted into ChatGPT, Claude, Gemini, Cursor, Codex, or another model together with DLSK reports and source excerpts:
+
+```bash
+dlsk ai-pack --out reports/demo/ai-review-prompts
+```
+
+Generated files:
+
+```text
+ai-review-prompts/README.md
+ai-review-prompts/01-owner-admin-review.md
+ai-review-prompts/02-tokenomics-risk-review.md
+ai-review-prompts/03-upgradeability-review.md
+ai-review-prompts/04-launch-blocker-review.md
+ai-review-prompts/05-audit-prep-summary.md
+```
+
+Recommended workflow:
+
+```text
+1. Run DLSK scan / readiness / surface-map checks.
+2. Generate the AI review prompt pack.
+3. Paste one prompt at a time into an AI model with the relevant source, report, and deployment notes.
+4. Treat the AI output as review input, not as proof of safety.
+5. Keep only confirmed items in the final launch-readiness evidence pack.
+```
+
+See:
+
+- [AI-Assisted Launch-Readiness Workflow](docs/ai-assisted-launch-readiness-workflow.md)
+- [AI review prompts](docs/ai-review-prompts/README.md)
 
 ---
 
@@ -263,12 +314,15 @@ Best-fit projects:
 
 - ERC20 / staking / vesting / airdrop projects before formal audit
 - Small teams preparing for testnet or mainnet
+- Teams using AI-generated or AI-reviewed Solidity that still need structured launch-readiness evidence
 - Teams that want a structured pre-audit checklist before spending on a formal audit
 
 ---
 
 ## Useful docs
 
+- `docs/ai-assisted-launch-readiness-workflow.md`
+- `docs/ai-review-prompts/README.md`
 - `docs/sample-report-preview.html`
 - `docs/demo-visual-assets.md`
 - `docs/structured-imports.md`
@@ -292,12 +346,13 @@ Best-fit projects:
 
 This project can support services such as:
 
-- Pre-audit technical review
+- AI-assisted pre-audit launch-readiness review
 - DeFi/token launch safety review
 - Audit preparation pack
 - Owner/admin permission review
 - GitHub Actions / SARIF security gate setup
 - Project readiness review before formal audit
+- AI review prompt pack customization for internal teams
 
 Typical early-stage review scope:
 
@@ -306,7 +361,8 @@ Typical early-stage review scope:
 2. Review owner/admin, mint, pause, blacklist, tax, fee, rescue, withdraw, and upgrade paths
 3. Generate a Markdown/HTML report
 4. Generate an audit-preparation pack
-5. Provide a short remediation checklist before formal audit or mainnet launch
+5. Generate AI review prompts for human-in-the-loop follow-up
+6. Provide a short remediation checklist before formal audit or mainnet launch
 ```
 
 Contact: open an issue in this repository or reach out via the maintainer profile.
@@ -315,4 +371,4 @@ Contact: open an issue in this repository or reach out via the maintainer profil
 
 ## Disclaimer
 
-This project provides lightweight pre-audit technical review and launch-readiness triage. It is not a formal security audit and does not guarantee the absence of vulnerabilities.
+This project provides lightweight pre-audit technical review and launch-readiness triage. It is not a formal security audit and does not guarantee the absence of vulnerabilities. AI-assisted review output should be treated as review input, not as proof of safety.
